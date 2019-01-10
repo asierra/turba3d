@@ -14,7 +14,7 @@ Run the executable and press SPACE to start or pause the
 simulation. To exit, just press ESCAPE.
 
 Use the keys WASD to navigate and the mouse to orient the camera. The
-scroll can be zoom the scene.
+scroll can zoom the scene.
 
 ## Dependencies
 
