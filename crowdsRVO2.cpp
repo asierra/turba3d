@@ -6,10 +6,12 @@
 */
 #include "crowds.h"
 #include <RVO.h>
+#include <iostream>
 
 
 RVO::RVOSimulator *sim;
 std::vector<RVO::Vector2> goals;
+std::vector<RVO::Vector2> prev;
 
 
 CrowdSim::CrowdSim()
@@ -33,6 +35,7 @@ void CrowdSim::addAgent(glm::vec2 pos, glm::vec2 goal)
 {
   sim->addAgent(RVO::Vector2(pos.x, pos.y));
   goals.push_back(RVO::Vector2(goal.x, goal.y));
+  prev.push_back(RVO::Vector2(pos.x, pos.y));
 }
 
 void CrowdSim::addQuadObstacle(glm::vec2 lt, glm::vec2 rb)
@@ -89,7 +92,9 @@ bool CrowdSim::reachedGoal()
 
 void CrowdSim::doStep()
 {
-    sim->doStep();
+  for (size_t i = 0; i < sim->getNumAgents(); ++i)
+    prev[i] = sim->getAgentPosition(i);
+  sim->doStep();
 }
 
 glm::vec2 CrowdSim::getAgentPosition(size_t agentNo)
@@ -100,5 +105,10 @@ glm::vec2 CrowdSim::getAgentPosition(size_t agentNo)
 
 glm::vec2 CrowdSim::getAgentOrientation(size_t agentNo)
 {
-  return glm::vec2(1.0, 0.0);
+  RVO::Vector2 orientation = sim->getAgentPosition(agentNo) - prev[agentNo];
+  if (RVO::absSq(orientation) < 0.01f)
+    orientation = RVO::Vector2(0.0f, 1.0f);
+  orientation = RVO::normalize(orientation);
+
+  return glm::vec2(orientation.x(), orientation.y());
 }

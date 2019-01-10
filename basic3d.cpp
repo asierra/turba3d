@@ -68,8 +68,6 @@ void buildCube(glm::vec3 lb, glm::vec3 rt)
 {
   float u, v, w;
 
-  std::cout << "cube " << lb.x << " " << lb.y << " " << lb.z << "," << rt.x << " " << rt.y << " " << rt.z << std::endl;
-
   for (int i=0; i < 216; i += 6) {
     u = (cube[i]   < 0) ? lb.x: rt.x; 
     v = (cube[i+1] < 0) ? lb.y: rt.y; 
@@ -121,7 +119,6 @@ void create3Dobstacles(CrowdSim *sim)
     buildCube(lb, rt);
   }
 
-  std::cout << "crea obstacles " << sim->obstacle_vertices.size() << " " << vertices.size() << " " << sizeof(cube) << std::endl;
   glGenVertexArrays(1, &obstaclesVAO);
   glGenBuffers(1, &obstaclesVBO);
   glBindVertexArray(obstaclesVAO);
@@ -145,7 +142,6 @@ void create3Dagents(CrowdSim *sim)
   glm::vec3 rt = glm::vec3( a, 1.8f,  l);
   buildCube(lb, rt);
   
-  std::cout << "crea agents " << " " << vertices.size() << " " << std::endl;
   glGenVertexArrays(1, &agentsVAO);
   glGenBuffers(1, &agentsVBO);
   glBindVertexArray(agentsVAO);
@@ -160,7 +156,6 @@ void create3Dagents(CrowdSim *sim)
 
 void draw_obstacles(CrowdSim *sim)
 {
-  // std::cout << "draw obstacles" << std::endl;
   glBindVertexArray(obstaclesVAO);
   glDrawArrays(GL_TRIANGLES, 0, n_obstacles_vertices);
   glBindVertexArray(0);

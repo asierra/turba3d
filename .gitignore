@@ -6,6 +6,8 @@
 *.lo
 *.o
 *.obj
+turba3d
+*~
 
 # Precompiled Headers
 *.gch

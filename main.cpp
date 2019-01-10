@@ -17,9 +17,6 @@
 #include <string>
 #include <iostream>
 
-//#define STB_IMAGE_IMPLEMENTATION
-//#include <stb_image.h>
-
 #include "crowds.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -33,9 +30,8 @@ unsigned int loadCubemap(std::vector<std::string> faces);
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 720;
 
-// camera
-//Camera camera(glm::vec3(0.0f, 1.0f, 7.0f));
-Camera camera(glm::vec3(0.0f, 0.6f, 2.5f));
+Camera camera(glm::vec3(0.0f, 0.4f, 1.56f), glm::vec3(0.0f, 1.0f, 0.0f),
+	      -90.0, -15.0);
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -67,7 +63,7 @@ int main()
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Simulación Multitudes 3D Básico", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -75,10 +71,10 @@ int main()
   }
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-  glfwSetCursorPosCallback(window, mouse_callback);
+  //glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
   // tell GLFW to capture our mouse
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cout << "Failed to initialize GLAD" << std::endl;
@@ -93,13 +89,13 @@ int main()
   
   float floorLarge = 1;
   float floorVertices[] = {
-			   // positions          // texture Coords
-			  -floorLarge, 0.0f, -floorLarge,  0.0f, 0.0f,
-			   floorLarge, 0.0f, -floorLarge,  1.0f, 0.0f,
-			   floorLarge, 0.0f,  floorLarge,  1.0f, 1.0f,
-			   floorLarge, 0.0f,  floorLarge,  1.0f, 1.0f,
-			  -floorLarge, 0.0f,  floorLarge,  0.0f, 1.0f,
-		          -floorLarge, 0.0f, -floorLarge,  0.0f, 0.0f,
+    // positions          // texture Coords
+    -floorLarge, 0.0f, -floorLarge,  0.0f, 0.0f,
+     floorLarge, 0.0f, -floorLarge,  1.0f, 0.0f,
+     floorLarge, 0.0f,  floorLarge,  1.0f, 1.0f,
+     floorLarge, 0.0f,  floorLarge,  1.0f, 1.0f,
+    -floorLarge, 0.0f,  floorLarge,  0.0f, 1.0f,
+    -floorLarge, 0.0f, -floorLarge,  0.0f, 0.0f,
   };
   
   float skyboxVertices[] = {
@@ -246,6 +242,10 @@ int main()
 	glm::vec2 pos = sim->getAgentPosition(i);
 	glm::mat4 model = glm::mat4(scale);
 	model = glm::translate(model, glm::vec3(pos.x, 0.0f, pos.y));
+
+	glm::vec2 o = sim->getAgentOrientation(i);
+	float angle = glm::atan(o.x, o.y);
+	model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	colors.setMat4("model", model);
 	draw_agents(sim);
       }
@@ -285,25 +285,23 @@ int main()
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       pause = !pause;
-      std::cout << "camera " << camera.Position.x  << " " << camera.Position.y << " " << camera.Position.z << std::endl;
       
-    }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+      camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+      camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+      camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+      camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
+  glViewport(0, 0, width, height);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
